@@ -34,7 +34,6 @@ abstract class Base
         if (!empty($item)) { //商品存在时
             $item['quantity'] += $quantity;
             if (intval($item['quantity']) < 1) {
-                $item['quantity'] = 1;
                 throw new CartMessageException('商品数量不能小于1');
             }
         } else {

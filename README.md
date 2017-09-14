@@ -29,7 +29,12 @@ laravel的购物车插件。
     
     use Tanwen\Cart\Facades\Cart;  //加载facades
     
-    Cart::add(商品ID, (+-)数量, 店铺ID（可选 ）);
+    try {
+        Cart::add(商品ID, (+-)数量, 店铺ID（可选 ）);
+        return $this->_ajaxResponse(0, '添加成功');
+    }catch (CartMessageException $exception){
+        return $this->_ajaxResponse(1, $exception->getMessage());
+    }
     
     $items = Cart::items(); 获取购物车商品
     
