@@ -11,7 +11,7 @@ laravel的购物车插件。
     
      aliases  添加："Cart": "Tanwen\Cart\Facades\Cart::class"
      
-3.使用方法：
+3.修改配置文件：
 
     修改配置文件文件vendor/tanwen/cart/config/cart.php
     
@@ -23,7 +23,9 @@ laravel的购物车插件。
     
     item.fieldStock 商品库存在model的输出属性字段，用来 判断库存
     
-添加商品：
+    php artisan migrate  生成mysql table
+    
+4.使用方法：
     
     use Tanwen\Cart\Facades\Cart;  //加载facades
     
