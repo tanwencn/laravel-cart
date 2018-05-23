@@ -3,7 +3,7 @@ laravel的购物车插件。
 
 1.安装：
 
-    composer require tanwen/cart
+    composer require tanwencn/cart
  
 2.laravel < 5.5的需要修改配置文件comfig/app.php：
 
