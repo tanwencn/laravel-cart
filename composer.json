@@ -1,5 +1,5 @@
 {
-    "name": "tanwen/cart",
+    "name": "tanwencn/cart",
     "description": "This a laravel shoppping cart for build composer packagist .",
     "keywords": ["laravel", "shopcart", "cart"],
 	"license": "MIT",
