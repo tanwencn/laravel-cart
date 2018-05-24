@@ -19,7 +19,7 @@ laravel的购物车插件。支持作用域、持久化。
     
     $product = Product::find(1); //Product模型需要保证$product->price可执行
     
-    Cart::put($product, 2);
+    添加购物车 Cart::put($product, 2);
     
     修改购物车：Cart::put($product, 3, true);
     
