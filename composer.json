@@ -11,13 +11,13 @@
     ],
     "autoload": {
         "psr-4": {
-            "Tanwen\\Cart\\": "src/"
+            "Tanwencn\\Cart\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Tanwencn\\Cart\\ServiceProvider"
+                "Tanwencn\\Cart\\CartServiceProvider"
             ],
             "aliases": {
                 "Cart": "Tanwencn\\Cart\\Facades\\Cart"

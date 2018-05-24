@@ -10,7 +10,7 @@ namespace Tanwencn\Cart;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 
-class ServiceProvider extends \Illuminate\Support\ServiceProvider
+class CartServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
