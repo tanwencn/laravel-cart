@@ -23,7 +23,7 @@ laravel的购物车插件。支持作用域、持久化。
     
     修改购物车：Cart::put($product, 3, true);
     
-    删除购物车商品： Cart::forget($product->id);
+    删除购物车商品： Cart::forget($cart_key);
     
     清空购物车：Cart::flush();
     
@@ -34,8 +34,10 @@ laravel的购物车插件。支持作用域、持久化。
     $items = Cart::get(); 获取购物车商品
     
     foreach($items as $item){
+        $item->getCartKey(); //购物车商品唯一标识
         $item->qty //商品数量
-        $item->model //添加时传入的Product模型
+        $item->price //商品数量
+        $item->cartable //添加时传入的Product模型
         $item->subtotal //用Product->price生成的小计
     }
     

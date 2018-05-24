@@ -9,8 +9,6 @@
 namespace Tanwencn\Cart;
 
 use Illuminate\Auth\AuthManager;
-use Illuminate\Auth\Events\Login;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Session\SessionManager;
@@ -31,13 +29,6 @@ class Cart
         $this->session = $sessionManager;
         $this->events = $events;
         $this->auth = $auth;
-
-    }
-
-    protected function listens()
-    {
-        $this->listens(Login::class, [$this, 'sync']);
-        $this->listens(Logout::class, [$this, 'flush']);
     }
 
     public static function scope($scope = 'default')
@@ -64,15 +55,13 @@ class Cart
         }
 
         $items = $this->get();
-        if (!$cover && $items->has($item->cartable_id)) {
-            $item->qty += $items->get($item->cartable_id)->qty;
+        if (!$cover && $items->has($item->getCartKey())) {
+            $item->qty += $items->get($item->getCartKey())->qty;
         }
 
         $item->qty = $item->qty > 0 ? $item->qty : 1;
 
-        $this->events->fire('cart.added', $item);
-
-        $items->put($item->cartable_id, $item);
+        $items->put($item->getCartKey(), $item);
 
         $this->session->put($this->cacheKey(), $items);
 
@@ -92,10 +81,12 @@ class Cart
         if (!$this->auth->check()) return false;
 
         $user_id = $this->auth->id();
+
         CartModel::where('user_id', $user_id)->delete();
+
         foreach ($this->get() as $item) {
             $item->user_id = $user_id;
-            $item->save();
+            CartModel::create($item->only(['user_id', 'qty', 'cartable_type', 'cartable_id']));
         }
 
     }
@@ -104,7 +95,11 @@ class Cart
     {
         if (!$this->auth->check()) return false;
 
-        $models = CartModel::with('model')->where('user_id', $this->auth->id())->get();
+        $user_id = $this->auth->id();
+
+        $models = CartModel::where('user_id', $user_id)->get();
+
+
         foreach ($models as $model) {
             self::put($model);
         }
@@ -112,10 +107,10 @@ class Cart
         $this->save();
     }
 
-    public function forget($cartable_id)
+    public function forget($key)
     {
         $items = $this->get();
-        $items->pull($cartable_id);
+        $items->pull($key);
         $this->session->put($this->cacheKey(), $items);
     }
 

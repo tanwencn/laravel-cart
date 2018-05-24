@@ -7,6 +7,9 @@
  */
 namespace Tanwencn\Cart;
 
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
+
 class CartServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
@@ -26,6 +29,11 @@ class CartServiceProvider extends \Illuminate\Support\ServiceProvider
                 __DIR__ . '/../migrations' => database_path('migrations'),
             ], 'tanwencms');
         }
+
+        Event::listen(Login::class, function(){
+            app('cart')->sync();
+        });
+
     }
 
     /**
