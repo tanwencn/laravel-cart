@@ -13,5 +13,8 @@ use Illuminate\Support\Collection;
 
 class Items extends Collection
 {
-
+    public function subtotal()
+    {
+        return $this->sum('subtotal');
+    }
 }

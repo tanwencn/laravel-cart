@@ -13,7 +13,7 @@ class CreateCartTable extends Migration
      */
     public function up()
     {
-        Schema::create('cart', function (Blueprint $table) {
+        Schema::create('carts', function (Blueprint $table) {
             $table->bigInteger('id', true)->unsigned();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('targetable_id')->unsigned()->nullable();

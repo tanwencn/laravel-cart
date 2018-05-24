@@ -1,56 +1,54 @@
 # laravel-cart
-laravel的购物车插件。
+laravel的购物车插件。支持作用域、持久化。 
 
 1.安装：
 
-    composer require tanwen/cart
+    composer require tanwencn/laravel-cart
  
 2.laravel < 5.5的需要修改配置文件comfig/app.php：
 
-     providers 添加："Tanwen\Cart\ServiceProvider::class"
+     providers 添加："Tanwencn\Cart\ServiceProvider::class"
     
-     aliases  添加："Cart": "Tanwen\Cart\Facades\Cart::class"
-     
-3.修改配置文件：
+     aliases  添加："Cart": "Tanwencn\Cart\Facades\Cart::class"
+    
+3.使用方法：
+    
+    use Tanwencn\Cart\Facades\Cart;  //加载facades
+    
+    添加购物车：
+    
+    $product = Product::find(1); //Product模型需要保证$product->price可执行
+    
+    Cart::put($product, 2);
+    
+    修改购物车：Cart::put($product, 3, true);
+    
+    删除购物车商品： Cart::forget($product->id);
+    
+    清空购物车：Cart::flush();
+    
+    Cart::save();//持久化，需要每次操作购物车完毕后执行一次，若用户登陆时会同步保存到数据库。不调用该方法时，购物车操作只在session有效时有效。
+        
+    购物车查询
+  
+    $items = Cart::get(); 获取购物车商品
+    
+    foreach($items as $item){
+        $item->qty //商品数量
+        $item->model //添加时传入的Product模型
+        $item->subtotal //用Product->price生成的小计
+    }
+    
+    $items->subtotal(); //商品总价
+    
+4.作用域
 
-    修改配置文件文件vendor/tanwen/cart/config/cart.php
+    商品收藏
+    Cart::scope('wishlist');
+    Cart::add($product);
+    Cart::save(); //放入数据库做持久化
     
-    table：登陆后购物车永久储存表
-    
-    item.model 商品数据的Eloquent模型 false为关闭，购物车只做简单数量储存。开启后可判断库存上下架价格小计 及输出model等功能
-    
-    item.fieldPrice 商品价格在model的输出属性字段，用来计算价格
-    
-    item.fieldStock 商品库存在model的输出属性字段，用来 判断库存
-    
-    php artisan migrate  生成mysql table
-    
-4.使用方法：
-    
-    use Tanwen\Cart\Facades\Cart;  //加载facades
-    
-    try {
-        Cart::add(商品ID, (+-)数量, 店铺ID（可选 ）);
-        return $this->_ajaxResponse(0, '添加成功');
-    }catch (CartMessageException $exception){
-        return $this->_ajaxResponse(1, $exception->getMessage());
-    }
-    
-    $items = Cart::items(); 获取购物车商品
-    
-    $items = Cart::items(function($item){
-        $item 等同下面的$item
-    }); //获取购物车商品，过滤function返回不为true的数据
-    
-    foreach($items as $shop_id => $data){
-        foreach($data as $goods_id => $item){
-            $item->quantity //商品数量
-            $item->getPrice() //商品价格
-            $item->getTotal() //商品小计
-            $item->model(); //获取配置的商品Eloquent
-            $item->hasValidity(); //判断商品是否有效
-            $item->getStatus(); //string: 正常、库存不足、 商品无效或已下架(model查询不到)
-        }
-    }
-    
+    购买清单
+    Cart::scope('order');
+    Cart::add($product);
     

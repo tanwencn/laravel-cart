@@ -12,10 +12,18 @@ use Tanwencn\Cart\Items;
 
 class Cart extends Model
 {
-    protected $fillable = ['targetable_id', 'targetable_type', 'qty', ];
+    protected $fillable = ['cartable_id', 'cartable_type', 'qty'];
 
     public function newCollection(array $models = [])
     {
         return new Items($models);
+    }
+
+    public function model(){
+        return $this->morphTo();
+    }
+
+    public function getSubtotalAttribute(){
+        return $this->qty * $this->model->price;
     }
 }
