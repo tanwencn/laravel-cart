@@ -5,28 +5,52 @@
  * Date: 2017/9/8
  * Time: 15:35
  */
-namespace Tanwen\Cart;
+
+namespace Tanwencn\Cart;
 
 class Cart
 {
-    private static $_drive = [];
-    private static $_scene = [];
+    static $scope;
 
-    public static function drive($key, $concrete)
+    protected $session;
+
+    protected $events;
+
+    public function __construct(SessionManager $sessionManager, Dispatcher $events)
     {
-        if ($concrete instanceof \Closure) {
-            self::$_drive[$key] = $concrete;
-        } else {
-            self::$_scene[$key] = $concrete;
-        }
+        $this->session = $sessionManager;
+        $this->events = $events;
     }
 
-    public static function scene($key, $parameters=[])
+    public static function scope($scope = null)
     {
-        if (!isset(self::$_scene[$key])) {
-            self::$_scene[$key] = call_user_func_array(self::$_drive[$key], $parameters);
+        self::$scope = $scope;
+    }
+
+    public function add(Model $model, $qty = 1)
+    {
+        if ($model instanceof Cart) {
+            $item = $model;
+        } else {
+            $item = new Cart([
+                'targetable_class' => get_class($model),
+                '$targetable_id' => $model->getKey(),
+                'qty' => $qty
+            ]);
         }
 
-        return self::$_scene[$key];
+        $items = $this->all();
+        if ($items->has($item->getKey())) {
+            $item->qty += $items->get($item->getKey())->qty;
+        }
+        $item->qty = $item->qty>0?:1;
+
+        $this->events->fire('cart.added', $item);
+
+        $items->put($item->getKey(), $item);
+var_dump($items->toJson());exit;
+        $this->session->put(\Tanwencn\Cart\Cart::$scope."_cart", $items);
+
+        return $item;
     }
 }

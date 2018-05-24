@@ -5,7 +5,7 @@
  * Date: 2017/9/8
  * Time: 15:35
  */
-namespace Tanwen\Cart\Facades;
+namespace Tanwencn\Cart\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

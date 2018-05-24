@@ -1,5 +1,5 @@
 {
-    "name": "tanwencn/cart",
+    "name": "tanwencn/laravel-cart",
     "description": "This a laravel shoppping cart for build composer packagist .",
     "keywords": ["laravel", "shopcart", "cart"],
 	"license": "MIT",
@@ -17,10 +17,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Tanwen\\Cart\\ServiceProvider"
+                "Tanwencn\\Cart\\ServiceProvider"
             ],
             "aliases": {
-                "Cart": "Tanwen\\Cart\\Facades\\Cart"
+                "Cart": "Tanwencn\\Cart\\Facades\\Cart"
             }
         }
     },
