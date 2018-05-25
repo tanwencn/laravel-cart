@@ -12,6 +12,7 @@ use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Collection;
 use Tanwencn\Cart\Models\Cart as CartModel;
 
 class Cart
@@ -24,11 +25,14 @@ class Cart
 
     protected $auth;
 
+    protected $old;
+
     public function __construct(SessionManager $sessionManager, Dispatcher $events, AuthManager $auth)
     {
         $this->session = $sessionManager;
         $this->events = $events;
         $this->auth = $auth;
+        $this->old = $this->all()->toArray();
     }
 
     public static function scope($scope = 'default')
@@ -41,7 +45,7 @@ class Cart
         return "cart." . self::$scope;
     }
 
-    public function put(Model $model, $qty = 1, $cover=false)
+    public function put(Model $model, $qty = 1, $cover = false)
     {
         if ($model instanceof CartModel) {
             $item = $model;
@@ -55,40 +59,73 @@ class Cart
         }
 
         $items = $this->get();
-        if (!$cover && $items->has($item->getCartKey())) {
-            $item->qty += $items->get($item->getCartKey())->qty;
+
+        if (!$cover && $items->has($item->getItemKey())) {
+            $item->qty += $items->get($item->getItemKey())->qty;
         }
 
         $item->qty = $item->qty > 0 ? $item->qty : 1;
 
-        $items->put($item->getCartKey(), $item);
-
-        $this->session->put($this->cacheKey(), $items);
+        $items->put($item->getItemKey(), $item);
 
         return $item;
     }
 
-    public function get()
+    protected function get()
     {
-        if (is_null($this->session->get($this->cacheKey()))) {
-            return new Items([]);
+        $items = $this->session->get($this->cacheKey());
+        if (is_null($items)) {
+            $items = new Items();
+            $this->session->put($this->cacheKey(), $items);
         }
-        return $this->session->get($this->cacheKey());
+
+        return $items;
     }
 
-    public function save()
+    public function all()
+    {
+        $items = $this->get();
+        $results = new Items();
+        foreach ($items as $key => $item) {
+            $copy = $item->replicate();
+            $copy->load('cartable');
+            if (is_null($copy->cartable)) {
+                $items->forget($key);
+            } else {
+                $results->put($key, $copy);
+            }
+        }
+
+        return $results;
+    }
+
+    protected function save()
     {
         if (!$this->auth->check()) return false;
 
-        $user_id = $this->auth->id();
+        if ($this->isChange()) {
 
-        CartModel::where('user_id', $user_id)->delete();
+            $user_id = $this->auth->id();
 
-        foreach ($this->get() as $item) {
-            $item->user_id = $user_id;
-            CartModel::create($item->only(['user_id', 'qty', 'cartable_type', 'cartable_id']));
+            CartModel::where('user_id', $user_id)->delete();
+
+            foreach ($this->get() as $item) {
+                $item->user_id = $user_id;
+                CartModel::create($item->only(['user_id', 'qty', 'cartable_type', 'cartable_id']));
+            }
+
+            $this->setOld($this->all());
         }
+    }
 
+    protected function setOld($items)
+    {
+        $this->old = $items;
+    }
+
+    protected function isChange()
+    {
+        return json_encode($this->all()->toArray()) !== json_encode($this->old);
     }
 
     public function sync()
@@ -99,23 +136,34 @@ class Cart
 
         $models = CartModel::where('user_id', $user_id)->get();
 
-
         foreach ($models as $model) {
-            self::put($model);
+            if (!$this->all()->has($model->getItemKey())) {
+                self::put($model);
+            }
         }
 
-        $this->save();
+        $this->setOld($models);
     }
 
-    public function forget($key)
+    /**
+     * Remove an item from the collection by key.
+     *
+     * @param  string|array $keys
+     */
+    public function forget($keys)
     {
         $items = $this->get();
-        $items->pull($key);
-        $this->session->put($this->cacheKey(), $items);
+        $items->forget($keys);
     }
 
     public function flush()
     {
         $this->session->forget($this->cacheKey());
     }
+
+    public function __destruct()
+    {
+        $this->save();
+    }
+
 }

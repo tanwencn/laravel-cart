@@ -15,26 +15,22 @@ laravel的购物车插件。支持作用域、持久化。
     
     use Tanwencn\Cart\Facades\Cart;  //加载facades
     
-    添加购物车：
-    
     $product = Product::find(1); //Product模型需要保证$product->price可执行
     
     添加购物车 Cart::put($product, 2);
     
-    修改购物车：Cart::put($product, 3, true);
+    覆盖购物车：Cart::put($product, 3, true);
     
     删除购物车商品： Cart::forget($cart_key);
     
     清空购物车：Cart::flush();
-    
-    Cart::save();//持久化，需要每次操作购物车完毕后执行一次，若用户登陆时会同步保存到数据库。不调用该方法时，购物车操作只在session有效时有效。
         
     购物车查询
   
-    $items = Cart::get(); 获取购物车商品
+    $items = Cart::all(); 获取购物车商品
     
     foreach($items as $item){
-        $item->getCartKey(); //购物车商品唯一标识
+        $item->getItemKey(); //购物车商品唯一标识
         $item->qty //商品数量
         $item->price //商品数量
         $item->cartable //添加时传入的Product模型
@@ -48,7 +44,6 @@ laravel的购物车插件。支持作用域、持久化。
     商品收藏
     Cart::scope('wishlist');
     Cart::add($product);
-    Cart::save(); //放入数据库做持久化
     
     购买清单
     Cart::scope('order');

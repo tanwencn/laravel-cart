@@ -31,7 +31,7 @@ class Cart extends Model
         return $this->qty * $this->price;
     }
 
-    public function getCartKey(){
-        return sha1($this->cartable_type.'_'.$this->cartable_id, true);
+    public function getItemKey(){
+        return hash('adler32',$this->cartable_type.'_'.$this->cartable_id);
     }
 }
