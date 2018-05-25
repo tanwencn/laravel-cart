@@ -1,169 +1,58 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: tanwen-d
- * Date: 2017/9/8
- * Time: 15:35
+ * 作者: Tanwen
+ * 邮箱: 361657055@qq.com
+ * 所在地: 广东广州
+ * 时间: 2018/3/14 14:16
  */
 
 namespace Tanwencn\Cart;
 
-use Illuminate\Auth\AuthManager;
-use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Session\SessionManager;
-use Illuminate\Support\Collection;
-use Tanwencn\Cart\Models\Cart as CartModel;
-
 class Cart
 {
-    static $scope = 'default';
+    private $instances;
 
-    protected $session;
+    private $app;
 
-    protected $events;
-
-    protected $auth;
-
-    protected $old;
-
-    public function __construct(SessionManager $sessionManager, Dispatcher $events, AuthManager $auth)
+    public function __construct($app)
     {
-        $this->session = $sessionManager;
-        $this->events = $events;
-        $this->auth = $auth;
-        $this->old = $this->all()->toArray();
+        $this->app = $app;
+        $this->instances = [];
     }
 
-    public static function scope($scope = 'default')
+    public function scope($scope = null)
     {
-        self::$scope = $scope;
-    }
+        $scope = $scope ?: 'default';
 
-    protected function cacheKey()
-    {
-        return "cart." . self::$scope;
-    }
-
-    public function put(Model $model, $qty = 1, $cover = false)
-    {
-        if ($model instanceof CartModel) {
-            $item = $model;
-            self::scope($item->scope);
-        } else {
-            $item = new CartModel([
-                'cartable_type' => get_class($model),
-                'cartable_id' => $model->getKey(),
-                'qty' => $qty
-            ]);
+        if (!isset($this->instances[$scope])) {
+            $this->instances[$scope] = new CartInstance($scope, config("cart.{$scope}", []), $this->app['session'], $this->app['auth']);
         }
 
-        $items = $this->get();
-
-        if (!$cover && $items->has($item->getItemKey())) {
-            $item->qty += $items->get($item->getItemKey())->qty;
-        }
-
-        $item->qty = $item->qty > 0 ? $item->qty : 1;
-
-        $items->put($item->getItemKey(), $item);
-
-        return $item;
-    }
-
-    protected function get()
-    {
-        $items = $this->session->get($this->cacheKey());
-        if (is_null($items)) {
-            $items = new Items();
-            $this->session->put($this->cacheKey(), $items);
-        }
-
-        return $items;
-    }
-
-    public function all()
-    {
-        $items = $this->get();
-        $results = new Items();
-        foreach ($items as $key => $item) {
-            $copy = $item->replicate();
-            $copy->load('cartable');
-            if (is_null($copy->cartable)) {
-                $items->forget($key);
-            } else {
-                $results->put($key, $copy);
-            }
-        }
-
-        return $results;
-    }
-
-    protected function save()
-    {
-        if (!$this->auth->check()) return false;
-
-        if ($this->isChange()) {
-
-            $user_id = $this->auth->id();
-
-            CartModel::where('user_id', $user_id)->delete();
-
-            foreach ($this->get() as $item) {
-                $item->user_id = $user_id;
-                CartModel::create($item->only(['user_id', 'qty', 'cartable_type', 'cartable_id']));
-            }
-
-            $this->setOld($this->all());
-        }
-    }
-
-    protected function setOld($items)
-    {
-        $this->old = $items;
-    }
-
-    protected function isChange()
-    {
-        return json_encode($this->all()->toArray()) !== json_encode($this->old);
+        return $this->instances[$scope];
     }
 
     public function sync()
     {
-        if (!$this->auth->check()) return false;
+        if (!$this->app['auth']->check()) return false;
 
-        $user_id = $this->auth->id();
+        $user_id = $this->app['auth']->id();
 
-        $models = CartModel::where('user_id', $user_id)->get();
+        $models = \Tanwencn\Cart\Models\Cart::where('user_id', $user_id)->get();
 
         foreach ($models as $model) {
-            if (!$this->all()->has($model->getItemKey())) {
-                self::put($model);
+            if(!$this->scope($model->scope)->has($model)){
+                $this->scope($model->scope)->put($model);
             }
         }
 
-        $this->setOld($models);
+        foreach ($this->instances as $instance) {
+            $instance->save(true);
+        }
     }
 
-    /**
-     * Remove an item from the collection by key.
-     *
-     * @param  string|array $keys
-     */
-    public function forget($keys)
+    public function __call($method, $parameters)
     {
-        $items = $this->get();
-        $items->forget($keys);
-    }
-
-    public function flush()
-    {
-        $this->session->forget($this->cacheKey());
-    }
-
-    public function __destruct()
-    {
-        $this->save();
+        return $this->scope()->$method(...$parameters);
     }
 
 }

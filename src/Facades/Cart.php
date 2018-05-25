@@ -14,7 +14,7 @@ class Cart extends Facade
     /**
      * Get the registered name of the component.
      *
-     * @return \Tanwencn\Cart\Cart
+     * @return \Tanwencn\Cart\CartInstance
      */
     protected static function getFacadeAccessor()
     {

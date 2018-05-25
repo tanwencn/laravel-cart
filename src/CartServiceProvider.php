@@ -26,6 +26,7 @@ class CartServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
+                __DIR__ . '/../config' => config_path(),
                 __DIR__ . '/../migrations' => database_path('migrations'),
             ], 'tanwencms');
         }
@@ -41,9 +42,8 @@ class CartServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function register()
     {
-
         $this->app->singleton('cart', function ($app) {
-            return new Cart($app['session'], $app['events'], $app['auth']);
+            return new Cart($app);
         });
     }
 }

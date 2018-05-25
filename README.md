@@ -1,5 +1,5 @@
 # laravel-cart
-laravel的购物车插件。支持作用域、持久化。 
+laravel的购物车插件。支持作用域、持久化、关联产品模型。 
 
 1.安装：
 
@@ -19,9 +19,9 @@ laravel的购物车插件。支持作用域、持久化。
     
     添加购物车 Cart::put($product, 2);
     
-    覆盖购物车：Cart::put($product, 3, true);
+    修改购物车：Cart::update($item_key, 3);
     
-    删除购物车商品： Cart::forget($cart_key);
+    删除购物车商品： Cart::forget($item_key);
     
     清空购物车：Cart::flush();
         
@@ -38,14 +38,27 @@ laravel的购物车插件。支持作用域、持久化。
     }
     
     $items->subtotal(); //商品总价
+
+4.持久化数据
+
+    默认情况下除了order作用域，其它作用域默认为在登陆的情况下保存数据到数据库，并在下次登陆时合并当前购物车。
+    若想取消作用域的持久化，可在config/cart.php配置:
+    'order' => [
+        'persistent' => false
+    ]
+    
     
 4.作用域
-
-    商品收藏
-    Cart::scope('wishlist');
+    
+    默认域：default
     Cart::add($product);
+    Cart::all();
+    
+    商品收藏
+    Cart::scope('wishlist')->add($product);
+    Cart::scope('wishlist')->all();
     
     购买清单
-    Cart::scope('order');
-    Cart::add($product);
+    Cart::scope('order')->add($product);
+    Cart::scope('order')->all();
     
