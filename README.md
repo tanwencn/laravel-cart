@@ -21,7 +21,8 @@ laravel的购物车插件。支持作用域、持久化、关联产品模型。
     
     修改购物车：Cart::update($item_key, 3);
     
-    删除购物车商品： Cart::forget($item_key);
+    删除购物车商品： Cart::forget($item_key or [$item_key1, $item_key2]);
+    删除购物车商品： Cart::forgetByModel($product or [$product1, $product2]);
     
     清空购物车：Cart::flush();
         

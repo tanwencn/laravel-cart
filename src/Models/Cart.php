@@ -12,7 +12,7 @@ use Tanwencn\Cart\Items;
 
 class Cart extends Model
 {
-    protected $fillable = ['cartable_id', 'cartable_type', 'qty', 'user_id'];
+    protected $fillable = ['cartable_id', 'cartable_type', 'qty', 'user_id', 'scope'];
 
     public function newCollection(array $models = [])
     {

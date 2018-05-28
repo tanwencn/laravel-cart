@@ -45,8 +45,9 @@ class Cart
             }
         }
 
-        foreach ($this->instances as $instance) {
-            $instance->save(true);
+        $scopes = array_keys($this->app['session']->get('cart', []));
+        foreach ($scopes as $scope) {
+            $this->scope($scope)->save(true);
         }
     }
 

@@ -50,31 +50,27 @@ class CartInstance
 
     public function has(Model $model)
     {
-        if ($model instanceof Cart) {
-            $item = $model;
-        } else {
-            if (!$model->getKey()) abort(500, 'model call getKey() is not exist.');
-            $item = new Cart([
-                'cartable_type' => get_class($model),
-                'cartable_id' => $model->getKey()
-            ]);
-        }
+        $item = $this->formatItem($model);
 
         return $this->all()->has($item->getItemKey());
     }
 
-    public function put(Model $model, $qty = 1)
-    {
+    public function formatItem($model, $qty=1){
         if ($model instanceof Cart) {
-            $item = $model;
+            return $model;
         } else {
             if (!$model->getKey()) abort(500, 'model call getKey() is not exist.');
-            $item = new Cart([
+            return new Cart([
                 'cartable_type' => get_class($model),
                 'cartable_id' => $model->getKey(),
                 'qty' => $qty
             ]);
         }
+    }
+
+    public function put(Model $model, $qty = 1)
+    {
+        $item = $this->formatItem($model, $qty);
         $item->scope = $this->name;
         $item->qty = $item->qty > 0 ? $item->qty : 1;
 
@@ -129,11 +125,11 @@ class CartInstance
                 abort(500);
             }
 
-            Cart::where('user_id', $user_id)->delete();
+            Cart::where('user_id', $user_id)->where('scope', $this->name)->delete();
 
             foreach ($this->get() as $item) {
                 $item->user_id = $user_id;
-                Cart::create($item->only(['user_id', 'qty', 'cartable_type', 'cartable_id']));
+                Cart::create($item->only(['user_id', 'qty', 'scope', 'cartable_type', 'cartable_id']));
             }
 
             $this->setOld($this->all());
@@ -158,7 +154,24 @@ class CartInstance
     public function forget($keys)
     {
         $items = $this->get();
+        foreach ($keys as $key){
+
+        }
         $items->forget($keys);
+    }
+
+    public function forgetByModel($models){
+        if($models instanceof Model){
+            $arr[] = $models;
+        }else{
+            $arr = $models;
+        }
+        $keys = [];
+        foreach ($arr as $model){
+            $keys[] = $this->formatItem($model)->getItemKey();
+        }
+
+        $this->forget($keys);
     }
 
     public function flush()
