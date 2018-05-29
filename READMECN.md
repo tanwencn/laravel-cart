@@ -17,7 +17,7 @@ laravel的购物车插件。
  
     "Tanwencn\Cart\ServiceProvider::class"
      
-## Usage
+## 使用方法
 use Tanwencn\Cart\Facades\Cart;
 
 购物车为您提供以下方法来使用：
@@ -60,7 +60,8 @@ use Tanwencn\Cart\Facades\Cart;
     Cart::scope('order')->add($product);
     Cart::scope('order')->all();
 
-## persistence
+
+## 持久化
 
 默认情况下除了order作用域，其它作用域默认为在登陆的情况下保存数据到数据库，并在下次登陆时合并当前购物车。
 
