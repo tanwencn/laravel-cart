@@ -68,7 +68,7 @@ Purchase list：
     Cart::scope('order')->add($product);
     Cart::scope('order')->all();
 
-## persistence
+## Persistence
 
 By default, other scopes (except for "order" scopes) default to saving data to the database at login and merge the current shopping cart at the next login.
 
