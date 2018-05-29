@@ -34,6 +34,7 @@ The shoppingcart gives you the following methods to use:
     Cart::update($item_key, 3); //Update Cart
     
     Cart::forget($item_key or [$item_key1, $item_key2]); //Deletes Cart
+    
     Cart::forgetByModel($product or [$product1, $product2]); //Deletes Cart
     
     Cart::flush(); //Flush Cart
@@ -41,11 +42,17 @@ The shoppingcart gives you the following methods to use:
     $items = Cart::all(); //Get Cart
     
     foreach($items as $item){
+        
         $item->getItemKey(); //Shopping cart items are uniquely identified.
+        
         $item->qty //quantity
+        
         $item->price //Reference $product->price
+        
         $item->cartable //return $product
+        
         $item->subtotal //$item->price * $item->qty
+        
     }
     
     $items->subtotal(); //all item subtotal
@@ -55,17 +62,20 @@ The shoppingcart gives you the following methods to use:
     
 default scope:
 
-    Cart::add($product); //equal:Cart::scope('default')->add($product);
-    Cart::all(); //equal:Cart::scope('default')->all();
+    Cart::add($product); //Equivalent to Cart::scope('default')->add($product);
+    
+    Cart::all(); //Equivalent to Cart::scope('default')->all();
     
 wishlist：
 
     Cart::scope('wishlist')->add($product);
+    
     Cart::scope('wishlist')->all();
     
 Purchase list：
 
     Cart::scope('order')->add($product);
+    
     Cart::scope('order')->all();
 
 ## Persistence
@@ -75,7 +85,9 @@ By default, other scopes (except for "order" scopes) default to saving data to t
 To disable persistence of the scope, configure it in:
 
     'order' => [
+    
         'persistent' => false
+        
     ]
     
 
