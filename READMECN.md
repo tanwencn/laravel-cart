@@ -49,14 +49,17 @@ use Tanwencn\Cart\Facades\Cart;
 ## 作用域
     
 默认域:
+
     Cart::add($product); //等于:Cart::scope('default')->add($product);
     Cart::all(); //等于:Cart::scope('default')->all();
     
 收藏列表：
+
     Cart::scope('wishlist')->add($product);
     Cart::scope('wishlist')->all();
     
 购买清单：
+
     Cart::scope('order')->add($product);
     Cart::scope('order')->all();
 
