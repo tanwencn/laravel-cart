@@ -35,6 +35,7 @@ use Tanwencn\Cart\Facades\Cart;
     Cart::update($item_key, 3); //个性购物车
     
     Cart::forget($item_key or [$item_key1, $item_key2]); //删除购物车
+    
     Cart::forgetByModel($product or [$product1, $product2]); //删除购物车
     
     Cart::flush(); //清空购物车
@@ -42,11 +43,17 @@ use Tanwencn\Cart\Facades\Cart;
     $items = Cart::all(); //获取购物车
     
     foreach($items as $item){
+    
         $item->getItemKey(); //购物车项目的唯一标识
+        
         $item->qty //数量
+        
         $item->price //引用于 $product->price
+        
         $item->cartable //返回添加的 $product 模型
+        
         $item->subtotal //等于：$item->price * $item->qty
+    
     }
     
     $items->subtotal(); //所有项目的subtotal总和
@@ -57,16 +64,19 @@ use Tanwencn\Cart\Facades\Cart;
 默认域:
 
     Cart::add($product); //等于:Cart::scope('default')->add($product);
+    
     Cart::all(); //等于:Cart::scope('default')->all();
     
 收藏列表：
 
     Cart::scope('wishlist')->add($product);
+    
     Cart::scope('wishlist')->all();
     
 购买清单：
 
     Cart::scope('order')->add($product);
+    
     Cart::scope('order')->all();
 
 
