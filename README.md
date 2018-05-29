@@ -1,67 +1,77 @@
 # laravel-cart
-laravel的购物车插件。
-支持作用域、持久化、关联产品模型。 
-适用于：购物车，愿望清单，购买清单，产品文章等收藏
+laravel Shopping cart。
+Support scope, persistence, and relational product models. 
+Applicable to: shopping cart, wish list, purchase list, product collection, posts and other collections.
 
-1.安装：
+## Installation Steps
+
+Require the Package
 
     composer require tanwencn/laravel-cart
  
-2.laravel < 5.5的需要修改配置文件comfig/app.php：
+ If you're using Laravel 5.5, this is all there is to do.
+ 
+ Should you still be on version 5.4 of Laravel, the final steps for you are to add the service provider of the package and alias the package. To do this open your config/app.php file.
+ 
+ Add a new line to the providers array:
 
      providers 添加："Tanwencn\Cart\ServiceProvider::class"
-    
-     aliases  添加："Cart": "Tanwencn\Cart\Facades\Cart::class"
-    
-3.使用方法：
-    
-    use Tanwencn\Cart\Facades\Cart;  //加载facades
-    
-    $product = Product::find(1); //Product模型需要保证$product->price可执行
-    
-    添加购物车 Cart::put($product, 2);
-    
-    修改购物车：Cart::update($item_key, 3);
-    
-    删除购物车商品： Cart::forget($item_key or [$item_key1, $item_key2]);
-    删除购物车商品： Cart::forgetByModel($product or [$product1, $product2]);
-    
-    清空购物车：Cart::flush();
+     
+## Usage
+use Tanwencn\Cart\Facades\Cart;
+
+The shoppingcart gives you the following methods to use:
         
-    购物车查询
-  
-    $items = Cart::all(); 获取购物车商品
+    $product = Product::find(1);
+    
+    Cart::put($product, 2); //Add Cart
+    
+    Cart::update($item_key, 3); //Update Cart
+    
+    Cart::forget($item_key or [$item_key1, $item_key2]); //Deletes Cart
+    Cart::forgetByModel($product or [$product1, $product2]); //Deletes Cart
+    
+    Cart::flush(); //Flush Cart
+          
+    $items = Cart::all(); //Get Cart
     
     foreach($items as $item){
-        $item->getItemKey(); //购物车商品唯一标识
-        $item->qty //商品数量
-        $item->price //商品数量
-        $item->cartable //添加时传入的Product模型
-        $item->subtotal //用Product->price生成的小计
+        $item->getItemKey(); //Shopping cart items are uniquely identified.
+        $item->qty //quantity
+        $item->price //Reference $product->price
+        $item->cartable //return $product
+        $item->subtotal //$item->price * $item->qty
     }
     
-    $items->subtotal(); //商品总价
+    $items->subtotal(); //all item subtotal
 
-4.持久化数据
+    
+## Scope
+    
+default scope:
 
-    默认情况下除了order作用域，其它作用域默认为在登陆的情况下保存数据到数据库，并在下次登陆时合并当前购物车。
-    若想取消作用域的持久化，可在config/cart.php配置:
+    Cart::add($product); //equal:Cart::scope('default')->add($product);
+    Cart::all(); //equal:Cart::scope('default')->all();
+    
+wishlist：
+
+    Cart::scope('wishlist')->add($product);
+    Cart::scope('wishlist')->all();
+    
+Purchase list：
+
+    Cart::scope('order')->add($product);
+    Cart::scope('order')->all();
+
+## persistence
+
+By default, other scopes (except for "order" scopes) default to saving data to the database at login and merge the current shopping cart at the next login.
+
+To disable persistence of the scope, configure it in:
+
     'order' => [
         'persistent' => false
     ]
     
-    
-4.作用域
-    
-    默认域：default
-    Cart::add($product);
-    Cart::all();
-    
-    商品收藏
-    Cart::scope('wishlist')->add($product);
-    Cart::scope('wishlist')->all();
-    
-    购买清单
-    Cart::scope('order')->add($product);
-    Cart::scope('order')->all();
+
     
