@@ -1,7 +1,11 @@
 # laravel-cart
+
 laravel Shopping cart。
+
 Support scope, persistence, and relational product models. 
+
 Applicable to: shopping cart, wish list, purchase list, product collection, posts and other collections.
+
 
 ## Installation Steps
 
@@ -16,6 +20,7 @@ Require the Package
  Add a new line to the providers array:
 
      providers 添加："Tanwencn\Cart\ServiceProvider::class"
+     
      
 ## Usage
 use Tanwencn\Cart\Facades\Cart;

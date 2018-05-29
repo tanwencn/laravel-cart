@@ -1,7 +1,11 @@
 # laravel-cart
-laravel的购物车插件。
+
+Laravel的购物车插件。
+
 支持作用域、持久化、关联产品模型。 
+
 适用于：购物车，愿望清单，购买清单，产品文章等收藏
+
 
 ## 安装步骤：
 
@@ -17,7 +21,9 @@ laravel的购物车插件。
  
     "Tanwencn\Cart\ServiceProvider::class"
      
+     
 ## 使用方法
+
 use Tanwencn\Cart\Facades\Cart;
 
 购物车为您提供以下方法来使用：
