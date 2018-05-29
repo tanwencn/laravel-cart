@@ -1,6 +1,6 @@
 # laravel-cart
 
-laravel Shopping cart。
+laravel Shopping cart.
 
 Support scope, persistence, and relational product models. 
 
