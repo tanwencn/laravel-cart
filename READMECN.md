@@ -1,4 +1,4 @@
-# laravel-cart
+# Laravel Cart
 
 Laravel的购物车插件。
 
@@ -20,11 +20,28 @@ Laravel的购物车插件。
  向providers数组添加一个新行：
  
     "Tanwencn\Cart\ServiceProvider::class"
-     
+    
+    
+配置数据库信息
+
+在你的 .env 文件中配置以下信息，使Laravel与数据库链接保持正常状态:
+```bash
+DB_HOST=localhost
+DB_DATABASE=homestead
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+```
+
+发布并运行数据库迁移：
+```
+php artisan vendor:publish --tag=laravel-cart
+php artisan migrate
+```
+
+安装完成。     
+
      
 ## 使用方法
-
-use Tanwencn\Cart\Facades\Cart;
 
 购物车为您提供以下方法来使用：
         
@@ -89,6 +106,3 @@ use Tanwencn\Cart\Facades\Cart;
     'order' => [
         'persistent' => false
     ]
-    
-
-    

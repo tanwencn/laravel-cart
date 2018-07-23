@@ -21,9 +21,26 @@ Require the Package
 
      providers 添加："Tanwencn\Cart\ServiceProvider::class"
      
+
+Configuration database
+
+Next make sure to create a new database and add your database credentials to your .env file:
+```bash
+DB_HOST=localhost
+DB_DATABASE=homestead
+DB_USERNAME=homestead
+DB_PASSWORD=secret
+```
+
+Run
+```php artisan vendor:publish --tag=laravel-cart```
+And
+```php artisan migrate```
      
+The installation is complete.
+   
+  
 ## Usage
-use Tanwencn\Cart\Facades\Cart;
 
 The shoppingcart gives you the following methods to use:
         
@@ -89,6 +106,3 @@ To disable persistence of the scope, configure it in:
         'persistent' => false
         
     ]
-    
-
-    

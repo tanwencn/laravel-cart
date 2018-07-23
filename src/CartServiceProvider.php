@@ -28,7 +28,7 @@ class CartServiceProvider extends \Illuminate\Support\ServiceProvider
             $this->publishes([
                 __DIR__ . '/../config' => config_path(),
                 __DIR__ . '/../migrations' => database_path('migrations'),
-            ], 'tanwencms');
+            ], 'laravel-cart');
         }
 
         Event::listen(Login::class, function(){

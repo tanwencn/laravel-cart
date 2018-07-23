@@ -1,6 +1,7 @@
 {
     "name": "tanwencn/laravel-cart",
     "description": "This a laravel shoppping cart for build composer packagist .",
+    "type": "library",
     "keywords": ["laravel", "shopcart", "cart"],
 	"license": "MIT",
     "authors": [
@@ -24,9 +25,7 @@
             }
         }
     },
-    "minimum-stability": "dev",
     "require": {
         "php": ">=7.0.0"
-    },
-    "prefer-stable": true
+    }
 }
