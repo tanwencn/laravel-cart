@@ -55,7 +55,8 @@ class CartInstance
         return $this->all()->has($item->getItemKey());
     }
 
-    public function formatItem($model, $qty=1){
+    public function formatItem($model, $qty = 1)
+    {
         if ($model instanceof Cart) {
             return $model;
         } else {
@@ -109,13 +110,17 @@ class CartInstance
                 $results->put($key, $copy);
             }
         }
-
         return $results;
+    }
+
+    private function config($key)
+    {
+        return isset($this->config[$key]) ? $this->config[$key] : null;
     }
 
     public function save($force = false)
     {
-        if (!empty($this->config['persistent']) && !$this->auth->check()) return false;
+        if ($this->config('persistent') == false || !$this->auth->check()) return false;
 
         if ($force || $this->isChange()) {
 
@@ -154,20 +159,21 @@ class CartInstance
     public function forget($keys)
     {
         $items = $this->get();
-        foreach ($keys as $key){
+        foreach ($keys as $key) {
 
         }
         $items->forget($keys);
     }
 
-    public function forgetByModel($models){
-        if($models instanceof Model){
+    public function forgetByModel($models)
+    {
+        if ($models instanceof Model) {
             $arr[] = $models;
-        }else{
+        } else {
             $arr = $models;
         }
         $keys = [];
-        foreach ($arr as $model){
+        foreach ($arr as $model) {
             $keys[] = $this->formatItem($model)->getItemKey();
         }
 
